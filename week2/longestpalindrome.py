@@ -20,7 +20,7 @@ class Solution(object):
             else:
                 # add highest possible count of even letters
                 length += countmap[i] - 1
-                flag == true
+                flag = True
         
         #there was at least one odd number of letters so we can place one letter in the middle of the palindrome
         if flag:
