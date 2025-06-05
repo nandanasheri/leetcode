@@ -1,7 +1,7 @@
 # https://leetcode.com/problems/generate-parentheses/
 # recursive solution 2^n
 class Solution:
-    def generateParenthesis(self, n: int) -> List[str]:
+    def generateParenthesis(self, n: int) -> list[str]:
         result = []
 
         def  _generateParan(stack, num_open, num_close):

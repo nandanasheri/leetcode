@@ -2,7 +2,7 @@
 # https://leetcode.com/problems/evaluate-reverse-polish-notation/
 # o(n) time and space
 class Solution:
-    def evalRPN(self, tokens: List[str]) -> int:
+    def evalRPN(self, tokens: list[str]) -> int:
         stack = []
         operands = set(['+', '-', '*', '/'])
         for i in tokens:

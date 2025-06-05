@@ -1,6 +1,6 @@
 # o(n) time AND space - we can do better with space
 class Solution:
-    def trap(self, height: List[int]) -> int:
+    def trap(self, height: list[int]) -> int:
         max_l = height[0]
         max_r = height[-1]
         l = 0
