@@ -1,43 +1,22 @@
-# o(n) time AND space - we can do better with space
 class Solution:
-    def trap(self, height: list[int]) -> int:
-        max_l = height[0]
-        max_r = height[-1]
-        l = 0
-        r = len(height)  - 1
+    def trap(self, height: List[int]) -> int:
+        if not height:
+            return 0
 
-        result = 0
+        maxL = [0] * len(height)
+        maxR = [0] * len(height)
 
-        while l < r:
-            if height[l] <= height[r]:
-                water = max_l - height [l]
-                max_l = max(max_l, height[l])
-                l += 1
-            else:
-                water = max_r - height [r]
-                max_r = max(max_r, height[r])
-                r -= 1
-            
-            result +=  water * (water > 0)
-
-
-        # o(n) time and space solution
-        '''l_arr = [0]  * len(height)
-        r_arr = [0]  * len(height)
-        
-        l_max = 0
         for i in range(1, len(height)):
-            l_max = max(l_max, height[i-1])
-            l_arr[i] = l_max
+            maxL[i] = (max(height[i-1], maxL[i-1]))
         
-        r_max = 0
         for i in range(len(height)-2, -1, -1):
-            r_max = max(r_max, height[i+1])
-            r_arr[i] = r_max
+            maxR[i] = max(height[i+1], maxR[i+1])
         
-        result = 0
+        res = 0
+
         for i in range(len(height)):
-            water =  min(l_arr[i], r_arr[i]) - height[i]
-            result +=  water * (water > 0)'''
-        
-        return result
+            curr_h = min(maxL[i], maxR[i]) - height[i]
+            if curr_h > 0:
+                res += curr_h
+
+        return res
