@@ -1,22 +1,19 @@
-# o(n) time and space
-# https://leetcode.com/problems/valid-parentheses/
 class Solution:
     def isValid(self, s: str) -> bool:
         stack = []
+        open_p = set(["(", "[", "{"])
 
         for i in s:
-            if i == "(" or i == "[" or i == "{":
+            if i in open_p:
                 stack.append(i)
             else:
-                if len(stack) == 0: return False
-                last_ele = stack[-1]
-                if last_ele == "(" and i == ")":
-                    stack.pop()
-                elif last_ele == "[" and i == "]":
-                    stack.pop()
-                elif last_ele == "{" and i == "}":
+                if len(stack) == 0:
+                    return False
+                top = stack[-1]
+                if (i == ")" and top == "(") or (i == "]" and top == "[") or (i == "}" and top == "{"):
                     stack.pop()
                 else:
                     return False
         
-        return (len(stack) == 0)
+        return len(stack) == 0
+        
