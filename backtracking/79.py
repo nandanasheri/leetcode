@@ -1,44 +1,40 @@
+'''
+[["A","B","C","E"],
+ ["S","F","C","S"],
+ ["A","D","E","E"]],
+
+ ind = 0
+ iterate through and perform dfs if [i][j] = word[ind]
+ edge cases - unequal or out of bounds or already visited
+ if ind == len(word): return true
+ recursively perform dfs on the neighbors, ind + 1
+ backtrack, 
+
+'''
 class Solution:
     def exist(self, board: List[List[str]], word: str) -> bool:
-        result = False
-        curr = []
-        size = len(word)
+        visited = set()
         m = len(board)
         n = len(board[0])
-        visited = set()
+        ind = 0
 
-        def dfs(word_ptr, i, j):
-            nonlocal result
-            if word_ptr == size - 1:
-                result = True
-                return
-            # recursively check neighbors
-            if j + 1 < n and board[i][j+1] == word[word_ptr+1] and (i, j+1) not in visited:
-                visited.add((i, j+1))
-                dfs(word_ptr+1, i, j+1)
-                visited.remove((i, j+1))
-            if j - 1 >= 0 and board[i][j-1] == word[word_ptr+1] and (i, j-1) not in visited:
-                visited.add((i, j-1))
-                dfs(word_ptr+1, i, j-1)
-                visited.remove((i, j-1))
-
-            if i + 1 < m and board[i+1][j] == word[word_ptr+1] and (i+1, j) not in visited:
-                visited.add((i+1, j))
-                dfs(word_ptr+1, i+1, j)
-                visited.remove((i+1, j))
-
-            if i - 1 >= 0 and board[i-1][j] == word[word_ptr+1] and (i-1, j) not in visited:
-                visited.add((i-1, j))
-                dfs(word_ptr+1, i-1, j)
-                visited.remove((i-1, j))
-
-            return
+        def dfs(i,j, ind):
+            # print(i,j,ind)
+            if ind == len(word):
+                return True
+            if i < 0 or i >=m or j < 0 or j >= n or (i,j) in visited or board[i][j] != word[ind]:
+                return False
+            visited.add((i,j))
+            # only need a singular True to be found
+            if dfs(i+1, j, ind+1) or dfs(i-1, j, ind+1) or dfs(i, j+1, ind+1) or dfs(i, j-1, ind+1):
+                return True
+            # the backtracking step!! want to be able to remove from visited so we can see if a better path comes up.
+            visited.remove((i,j))
         
-        for i in range(len(board)):
-            for j in range(len(board[0])):
-                if board[i][j] == word[0]:
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == word[ind]:
                     visited.clear()
-                    visited.add((i,j))
-                    dfs(0, i, j)
-
-        return result
+                    if dfs(i,j,ind):
+                        return True
+        return False
