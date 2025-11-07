@@ -1,24 +1,24 @@
+'''
+0,0 -> right, down
+0,0 -> 0,1
+2 decisions to make 
+'''
 class Solution:
     def uniquePaths(self, m: int, n: int) -> int:
-        target = (m-1, n-1)
-        # 2D cache - make sure to initialize your cache like this!!
-        cache = [[-1] * n for _ in range(m)]
+        dp_cache = []
+        for i in range(m+1):
+            inner = [0] * (n+1)
+            dp_cache.append(inner)
 
-        def _dfs(i, j):
+        # one possible way to get to the path from itself
+        dp_cache[m-1][n-1] = 1
 
-            print(i,j, cache)
-            if i == m-1 and j == n-1:
-                return 1
-            if i >= m or j >= n:
-                return 0
-
-            # check if result is cached
-            if cache[i][j] != -1:
-                return cache[i][j]
-
-            # go right and go down
-            cache[i][j] = _dfs(i, j+1) + _dfs(i+1, j)
-            return cache[i][j]
-
-        return _dfs(0,0)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if i == m-1 and j == n-1:
+                    continue
+                # look right and look down -> those are the two decisions so sum them up
+                dp_cache[i][j] = dp_cache[i+1][j] + dp_cache[i][j+1]
         
+        return dp_cache[0][0]
+
