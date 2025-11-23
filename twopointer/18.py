@@ -1,24 +1,33 @@
 class Solution:
     def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
-        res = set()
+        res = []
         nums.sort()
+        quad = []
 
-        for i in range(len(nums)):
-            for j in range(i+1, len(nums)-1):
-                diff = target - (nums[i] + nums[j])
-                l = j + 1
+        def kSum(k, start, target):
+            # recursive step
+            if k != 2:
+                for i in range(start, len(nums)-k+1):
+                    if i > start and nums[i] == nums[i-1]:
+                        continue
+                    quad.append(nums[i])
+                    kSum(k-1, i+1, target-nums[i])
+                    quad.pop()
+            # base case - two pointer 2Sum
+            if k == 2:
+                diff = target
+                l = start
                 r = len(nums) - 1
                 while l < r:
                     if nums[l] + nums[r] == diff:
-                        res.add((nums[i],nums[j],nums[l], nums[r]))
+                        res.append(quad + [nums[l], nums[r]])
                         l += 1
-                        r -= 1
+                        while l < r and nums[l] == nums[l-1]:
+                            l+= 1
                     elif nums[l] + nums[r] > diff:
                         r -=1 
                     else:
                         l += 1
         
-        res_list = []
-        for each in res:
-            res_list.append(list(each))
-        return res_list
+        kSum(4, 0, target)
+        return res
