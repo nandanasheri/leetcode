@@ -1,26 +1,21 @@
-# https://leetcode.com/problems/number-of-islands/
 class Solution:
     def numIslands(self, grid: List[List[str]]) -> int:
+        visited = set()
+        result = 0
         m = len(grid)
         n = len(grid[0])
 
-        def dfs(i, j):
-            # out of bounds
-            if i < 0 or i >= m or j < 0 or j >=n :
-                return
-            if grid[i][j] == "1":
-                grid[i][j] = "0"
-
-                # traverse through
-                dfs(i+1, j) 
-                dfs(i-1, j) 
-                dfs(i, j+1) 
-                dfs(i, j-1) 
-
-        num = 0
+        def dfs(i,j):
+            if i >= m or i < 0 or j >= n or j < 0 or (i,j) in visited or grid[i][j] == "0":
+                return 
+            visited.add((i,j))
+            for x,y in [(1,0), (0,1), (-1,0), (0,-1)]:
+                dfs(i+x, j+y)
+        
         for i in range(m):
             for j in range(n):
-                if grid[i][j] == "1":
+                if grid[i][j] == "1" and (i,j) not in visited:
                     dfs(i,j)
-                    num += 1
-        return num
+                    result += 1
+        
+        return result

@@ -1,32 +1,29 @@
 class Solution:
     def longestPalindrome(self, s: str) -> str:
-        n = len(s)
-        dp = [[False] * n for i in range(n)]
+        dp_cache = defaultdict(dict)
+        res = s[0]
 
-        maxlen = 1
-        res_ind = 0
-        
-        # strings of length 1 are palindromes
-        for i in range(n):
-            dp[i][i] = True
-        
-        # strings of length 2 check if they are palindromes
-        for i in range(n-1):
+        # smallest subproblems chars of len 1 are all valid palindromes
+        for i in range(len(s)):
+            dp_cache[i][i] = True
+
+        # len 2 are valid if chars are the same
+        for i in range(len(s)-1):
             if s[i] == s[i+1]:
-                dp[i][i+1] = True
-                if maxlen < 2:
-                    maxlen = 2
-                    res_ind = i
+                dp_cache[i][i+1] = True
+                res = s[i:i+2]
+            else:
+                dp_cache[i][i+1] = False
         
-        # strings of length greater than 3
-        # this loop looks for lengths 3, 4, 5 etc etc
-        for k in range(3, n+1):
-            for i in range(0, n-k+1):
-                j = i + (k-1)
-                if s[i] == s[j] and dp[i+1][j-1] == True:
-                    dp[i][j] = True
-                    if (j-i + 1) > maxlen:
-                        maxlen = j - i + 1
-                        res_ind = i
+        # iterate for len 3 and above by looking at subproblems!
+        for i in range(2, len(s)):
+            for j in range(0, len(s)-i):
+                l,r = j, i+j
+                if s[l] == s[r] and dp_cache[l+1][r-1] == True:
+                    dp_cache[l][r] = True
+                    if r-l+1 > len(res):
+                        res = s[l:r+1]
+                else:
+                    dp_cache[l][r] = False
         
-        return s[res_ind:res_ind+maxlen]
+        return res

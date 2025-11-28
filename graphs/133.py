@@ -9,21 +9,35 @@ class Node:
 from typing import Optional
 class Solution:
     def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        visited = set()
+        clone_map = {}
         q = deque()
-        hash_map = {}
 
-        if node:
-            q.append(node)
-            hash_map[node] = Node(node.val)
+        if not node: return None
+        # create a start node with no neighbors
+        new_node = Node(node.val)
+        clone_map [node.val] = new_node
+        q.append(node)
 
-        while len(q) != 0:
-            curr = q.popleft()
-            # print(curr.val)
-            for each in curr.neighbors:
-                if each not in hash_map:
-                    hash_map[each] = Node(each.val)
-                    q.append(each)
-                hash_map[curr].neighbors.append(hash_map[each])
-              
-        if node in hash_map: return hash_map[node] 
-        else: return None
+        # bfs
+        while q:
+            curr = q.pop()
+            if curr.val in visited:
+                continue
+
+            visited.add(curr.val)
+            for neighbor in curr.neighbors:
+                # print(curr.val, neighbor.val)
+                # if a copy doesn't already exist, create the copy
+                if neighbor.val not in clone_map:
+                    new_node = Node(neighbor.val)
+                    clone_map[neighbor.val] = new_node
+                # go to the new node's neighbor list and append the new neighbor to it
+                clone_map[curr.val].neighbors.append(clone_map[neighbor.val])
+                
+                # add the original neighbor to the queue
+                q.append(neighbor)
+        
+        return clone_map[node.val]
+                
+

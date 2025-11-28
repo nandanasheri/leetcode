@@ -1,31 +1,21 @@
-# https://leetcode.com/problems/longest-repeating-character-replacement/
-# barely counts as getting it overcomplicated it - not sure what was my fault still
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
-        
-        start, end = 0, 0
-        max_length = 0
-        freq_map = defaultdict(int)
+        l = 0
+        freqMap = {}
+        res = 0
 
-        def max_frequency():
+        for r in range(len(s)):
+            freqMap[s[r]] = 1 + freqMap.get(s[r], 0)
+            # you can put this in a function
             max_freq = 0
-            for i in freq_map:
-                max_freq = max(max_freq, freq_map[i])
-            return max_freq
+            for i in freqMap:
+                max_freq = max(max_freq, freqMap[i])
 
-        for end in range(len(s)):
-            
-            freq_map[s[end]] += 1
-            replacements = (end - start + 1) - max_frequency()
-            
-            while replacements > k:
-                freq_map[s[start]] -= 1
-                start += 1
-                replacements = end - start + 1 - max_frequency()
-              
-            max_length = max(max_length, end - start +1)
-                
-            
-
-        return max_length
-        
+            while (r-l+1) - max_freq > k:
+                freqMap[s[l]] -= 1
+                l += 1
+                max_freq = 0
+                for i in freqMap:
+                    max_freq = max(max_freq, freqMap[i])
+            res = max(res, r-l+1)
+        return res
