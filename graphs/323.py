@@ -16,7 +16,7 @@ class Solution:
             n1 = find(e1)
             n2 = find(e2)
             # they are already merged, we do nothing
-            if n1 == n2:x
+            if n1 == n2:
                 return 0
             if rank[n1] > rank[n2]:
                 parent[n2] = n1
