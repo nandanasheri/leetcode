@@ -1,0 +1,32 @@
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        parent = [i for i in range(n)]
+        rank = [1] * n
+
+        def find(node):
+            curr = node
+            while curr != parent[curr]:
+                parent[curr] = parent[parent[curr]]
+                curr = parent[curr]
+            return curr
+
+        def union(e1,e2):
+            n1 = find(e1)
+            n2 = find(e2)
+            if n1 == n2:
+                return 0
+            if rank[n1] > rank[n2]:
+                parent[n2] = n1
+                rank[n1] += 1
+            else:
+                parent[n1] = n2
+                rank[n2] += 1
+            return 1
+            
+        merges = 0
+        for i in range(n):
+            for j in range(i+1,n):
+                if isConnected[i][j] == 1:
+                    merges += union(i,j)
+        return n-merges
