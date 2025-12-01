@@ -1,19 +1,18 @@
 class Solution:
     def subsets(self, nums: List[int]) -> List[List[int]]:
-        size = len(nums)
+        curr = []
         result = []
-        currlist = []
-        def _subsets(i):
-            # we have two choices - either we add it or we don't
-            if i >= size:
-                result.append(currlist.copy())
+
+        def dfs(i):
+            if i == len(nums):
+                result.append(curr.copy())
                 return
-            
-            currlist.append(nums[i])
-            _subsets(i+1)
-            currlist.pop()
-            _subsets(i+1)
+            # add nums[i] to curr and recurse
+            curr.append(nums[i])
+            dfs(i+1)
+            curr.pop()
+            # recurse without adding nums[i]
+            dfs(i+1)
         
-        _subsets(0)
+        dfs(0)
         return result
-            

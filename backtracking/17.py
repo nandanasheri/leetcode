@@ -1,31 +1,26 @@
 class Solution:
     def letterCombinations(self, digits: str) -> List[str]:
-        result = []
-        curr = []
+        mapping = {2 : ['a', 'b', 'c'],
+        3 : ['d', 'e', 'f'],
+        4 : ['g', 'h', 'i'],
+        5 : ['j', 'k', 'l'],
+        6 : ['m', 'n', 'o'],
+        7 : ['p', 'q', 'r', 's'],
+        8 : ['t', 'u', 'v'],
+        9 : ['w', 'x', 'y', 'z']
+        }
 
-        num_map = {}
-        start = ord('a')
-        limit = 3
-        for i in range(2, 10):
-            num_map[i] = []
-            if i == 7 or i == 9:
-                limit = 4
-            else:
-                limit = 3
-            for j in range(limit):
-                num_map[i].append(chr(start))
-                start += 1
-        
-        def dfs(i):
-            # print(i, curr)
+        curr = []
+        result = []
+
+        def backtrack(i):
             if len(curr) == len(digits):
-                result.append(''.join(curr))
+                result.append("".join(curr))
                 return
-            for j in num_map[int(digits[i])]:
-                curr.append(j)
-                dfs(i+1)
+            for c in mapping[int(digits[i])]:
+                curr.append(c)
+                backtrack(i+1)
                 curr.pop()
         
-        if len(digits):
-            dfs(0)
+        backtrack(0)
         return result
