@@ -6,22 +6,28 @@
 #         self.right = right
 class Solution:
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        maxres = root.val
+        if not root:
+            return 0
+        max_path = float("-inf")
 
-        # return the max path sum without splitting the tree
-        def _maxPath(curr):
-            nonlocal maxres
+        def dfs(curr):
+            nonlocal max_path
             if not curr:
                 return 0
-            leftMax = _maxPath(curr.left)
-            rightMax = _maxPath(curr.right)
 
-            leftMax = max(leftMax, 0)
-            rightMax = max(rightMax, 0)
-            # calculate and update result if you find maximum WITH splitting
-            maxres = max(maxres, curr.val + leftMax + rightMax)
+            if not curr.left and not curr.right:
+                max_path = max(max_path, curr.val)
+                return curr.val
 
-            return curr.val + max(leftMax, rightMax)
+            _left_max = dfs(curr.left)
+            _right_max = dfs(curr.right)
+            
+            subtree_max = max([_left_max + _right_max + curr.val, _left_max + curr.val, _right_max + curr.val, curr.val])
+            # you can only choose to return a max path not the max subtree
+            return_max = max([ _left_max + curr.val, _right_max + curr.val, curr.val])
+            max_path = max(max_path, subtree_max)
+            
+            return return_max
         
-        _maxPath(root)
-        return maxres
+        dfs(root)
+        return max_path
