@@ -1,42 +1,39 @@
-'''
-brute force - o(n^2) check every possible substring
-use a num to keep track and check for every substring if it contains t then res = min(res, len(substr))
-'''
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        if len(s) < len(t):
-            return ""
-        t_map = {}
         s_map = {}
-
-        # initialize frequency map
-        for c in t:
-            if c in t_map:
-                t_map[c] += 1
-            else:
-                t_map[c] = 1
-        
-        l, r = 0, 0
-        res = float("inf")
-        res_l, res_r = 0,0
-
+        t_map = {}
         matches = 0
+        result = float("inf")
+        res_str = ""
+        for i in t:
+            t_map[i] = t_map.get(i,0) + 1
+        
         l = 0
         for r in range(len(s)):
-            s_map[s[r]] = 1 + s_map.get(s[r], 0)
-            if s[r] in t_map and s_map[s[r]] == t_map[s[r]]:
-                matches += 1
-
+            # print(l,r, s_map)
+            char = s[r]
+            # if in t -> add to map and check for a match
+            if char in t_map:
+                s_map[char] = s_map.get(char, 0) + 1 
+                if s_map[char] == t_map[char]:
+                    matches += 1
+            # print(matches)
+            # shift window until it's invalid again if valid window
             while matches == len(t_map):
-                if r-l+1 < res:
-                    res = r-l+1
-                    res_l, res_r = l,r
-                s_map[s[l]] -= 1
-                if s[l] in t_map and s_map[s[l]] < t_map[s[l]]:
-                    matches -= 1
+                if result > r-l+1:
+                    result = r-l+1
+                    res_str = s[l:r+1]
+                char = s[l]
+                if char in s_map:
+                    s_map[char] -= 1
+                    if s_map[char] < t_map[char]:
+                        matches -= 1
                 l += 1
+            
+            # shift so boundary is always a match for minimum
+            while l < len(s) and s[l] not in t_map:
+                l += 1
+        
+        return res_str
+            
 
-        if res == float("inf"):
-            return ""
-              
-        return s[res_l:res_r+1]
