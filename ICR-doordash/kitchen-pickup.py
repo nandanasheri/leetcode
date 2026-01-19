@@ -58,6 +58,7 @@ class WindowMergeService:
         # TODO:
         # 1) Fetch windows from API
         windows = self.kitchen_api.get_pickup_windows_for_restaurant(restaurant_id).windows
+        # check status code of return for windows
         
         # 2) Filter invalid (end <= start)
         # 3) Sort by start_min

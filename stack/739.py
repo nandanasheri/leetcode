@@ -1,15 +1,16 @@
-# https://leetcode.com/problems/daily-temperatures/description/
-# o(n)
 class Solution:
-    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:
-        output = [0] * len(temperatures)
-        stack = []
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        res = [0] * len(temperatures)
+        stack = deque()
 
-        for i in range(0, len(temperatures)):
-            temp = temperatures[i]
-            while len(stack) > 0 and stack[-1][0] < temp:
-                top = stack.pop()
-                ind = top[1]
-                output[ind] = i - ind
-            stack.append((temp, i))
-        return output
+        if len(temperatures):
+            stack.append((temperatures[0],0))
+
+        for i in range(1, len(temperatures)):
+            while stack and temperatures[i] > stack[-1][0]:
+                # print(stack)
+                temp, ind = stack.pop()
+                res[ind] = i - ind
+                # print(res)
+            stack.append((temperatures[i], i))
+        return res
