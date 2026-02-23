@@ -1,18 +1,19 @@
-# https://leetcode.com/problems/car-fleet/
 class Solution:
     def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
-        arr = []
+        cars = []
         for i in range(len(position)):
-            arr.append((position[i], speed[i]))
-        arr = sorted(arr)
-
+            cars.append((position[i], speed[i]))
+        cars.sort()
         stack = []
-
-        for p,s in arr[::-1]:
-            time = (target-p) / s
-            stack.append(time)
-
-            if len(stack) >= 2 and stack[-1] <= stack[-2]:
-                stack.pop()
-
+        
+        for i in range(len(cars)-1, -1, -1):
+            pos, speed = cars[i]
+            t = (target - pos) / speed
+            if stack:
+                time = stack[-1][2]
+                if t > time:
+                    stack.append((pos, speed, t))
+            else:
+                stack.append((pos, speed, t))
+        
         return len(stack)
