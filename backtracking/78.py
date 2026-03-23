@@ -1,18 +1,19 @@
 class Solution:
     def subsets(self, nums: List[int]) -> List[List[int]]:
-        curr = []
         result = []
+        curr = []
 
-        def dfs(i):
+        def generate_subsets(i):
             if i == len(nums):
-                result.append(curr.copy())
+                result.append(curr[::])
+                # print(curr)
+
                 return
-            # add nums[i] to curr and recurse
+            generate_subsets(i+1)
             curr.append(nums[i])
-            dfs(i+1)
+            generate_subsets(i+1)
             curr.pop()
-            # recurse without adding nums[i]
-            dfs(i+1)
+
         
-        dfs(0)
+        generate_subsets(0)
         return result
