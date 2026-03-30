@@ -1,25 +1,20 @@
 class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
-        curr = []
         result = []
+        curr = []
         currset = set()
-        
-        def dfs(i):
-            # print(i,curr)
+
+        def permute():
             if len(curr) == len(nums):
-                result.append(curr.copy())
+                result.append(curr[:])
                 return
-            if i >= len(nums):
-                return
-
-            for j in range(len(nums)):
-                if nums[j] not in currset:
-                    curr.append(nums[j])
-                    currset.add(nums[j])
-                    dfs(j)
-                    curr.pop()
-                    currset.remove(nums[j])
-
-        dfs(0)
-        return result
             
+            for i in nums:
+                if i not in currset:
+                    curr.append(i)
+                    currset.add(i)
+                    permute()
+                    curr.pop()
+                    currset.remove(i)
+        permute()
+        return result
