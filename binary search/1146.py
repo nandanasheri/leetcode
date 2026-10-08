@@ -1,35 +1,41 @@
+'''
+[6,0,3]
+
+snap = 1
+map that maps the snap_ids to the snapshot {1 : [5,0,0], 2 : [6,0,0]}
+{0:{0:5, 1:6}, 1, 2}
+
+'''
 class SnapshotArray:
 
     def __init__(self, length: int):
-        self.arr = {}
-        self.snaps = 0
-        self.length = length
+        self.num_snaps = 0
+        self.arr = []
         for i in range(length):
-            self.arr[i] = [(self.snaps, 0)]
-
-    def set(self, index: int, val: int) -> None:
-        self.arr[index].append((self.snaps, val))
+            self.arr.append([(0,0)])
         
+    def set(self, index: int, val: int) -> None:
+        self.arr[index].append((self.num_snaps, val))
 
     def snap(self) -> int:
-        self.snaps += 1
-        return self.snaps - 1
+        self.num_snaps += 1
+        return self.num_snaps - 1
         
 
     def get(self, index: int, snap_id: int) -> int:
-        all_snaps = self.arr[index]
-    
-        l, r = 0, len(all_snaps) - 1
-        while l <=r:
-            mid = (l+r) // 2
-            if all_snaps[mid][0] <= snap_id:
-                l = mid+1
+        # print(self.arr)
+        l = 0
+        r = len(self.arr[index]) - 1
+        result = self.arr[index][-1][1]
+        while l <= r:
+            mid = (l + r) // 2
+            if self.arr[index][mid][0] <= snap_id:
+                result = self.arr[index][mid][1]
+                # want to return right most element in case of duplicate history (most recent)
+                l = mid + 1
             else:
-                r = mid-1
-        # ???? so stupid
-        return all_snaps[r][1]
-        
-        
+                r = mid - 1
+        return result
 
 
 # Your SnapshotArray object will be instantiated and called as such:
