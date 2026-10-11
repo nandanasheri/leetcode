@@ -1,24 +1,51 @@
-# Leetcode Premium access so no real testcases to see if things break
+'''
+list of strings = ["Hello3#", "102!World$$"]
 
-# o(n) where n is the size of input_list, space is o(m) where m is the length of the whole list
-def encode (input_list: list[str]) -> str:
-    encodedstr = ""
-    for each in input_list:
-        encodedstr += str(len(each)) + each
-    return encodedstr
+encoding - use length as my delimiter 
+caveat - need to know what is a number
 
-# o(m) time and o(n) space?
-def decode (encoded: str) -> list[str]:
-    decoded_list = []
-    ind = 0
-    while ind < len(encoded):
-        num = int(encoded[ind])
-        decoded_list.append(encoded[ind+1: ind + num + 1])
-        ind += num + 1
-    return decoded_list
+              l
+               i
+encoded_str = 7#Hello3#11#102!World$$
+prefixed by length + #
+decoding:
+    iterate through
+        if hash is found:
+            length = prefix until hash
+            for i in range(length):
+                iterate through
+            add to list
+'''
+class Codec:
+    def encode(self, strs: List[str]) -> str:
+        """Encodes a list of strings to a single string.
+        """
+        encoded_str = ""
+        for elem in strs:
+            encoded_str += str(len(elem)) + "#" + elem
+        # print(encoded_str)
+        return encoded_str
+        
 
-input_list = ["3neet4", "3code2", "lov2e", "y3ou"]
-encoded_str = encode(input_list)
-output = decode(encoded_str)
+    def decode(self, s: str) -> List[str]:
+        """Decodes a single string to a list of strings.
+        """
+        strs = []
+        i = 0
+        l = 0
+        currlen = ""
+        while i < len(s):
+            j = i
+            while s[j] != "#":
+                j += 1
+            length = int(s[i:j])
+            strs.append(s[j+1: j+1+length])
+            i = j+1+length 
+        return strs
 
-print(output)
+        
+
+
+# Your Codec object will be instantiated and called as such:
+# codec = Codec()
+# codec.decode(codec.encode(strs))
