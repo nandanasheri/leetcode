@@ -1,0 +1,132 @@
+Event Booking Platform
+
+Requirements :
+core functionality : users discover events, reserve tickets, manage bookings
+organizers publish events, set ticket availability view reservations
+users browse upcoming events, book tickets, cancel bookings
+
+
+events - title desc location start time and end time
+total num of tickets
+publish / unpublish an events
+browse events
+
+reservations - 1+ tickets by user 
+view-reservations
+cancel a reservations
+status, create_date
+
+frontend : users : event discovery, event details, view/cancel reservations
+organiers : create events/ view reservations for an event
+
+clarifying questions:
+- can users become organizers who decides?
+- payment options?
+- change capacity of tickets?
+
+
+Database Schema : 
+users - create accounts, log in
+organizers - create, manage events
+users can be organizers
+authorized organizers modify events
+
+User (
+    name VARCHAR
+    email VARCHAR
+    user_id uuid primary key
+    phone_num int
+    username VARCHAR
+)
+
+Event (
+    event_id UUID primary key
+    title VARCHAR
+    desc VARCHAR
+    location VARCHAR
+    start_time datetime
+    end_time datetime
+    num_tickets int
+)
+
+PublishedEvents (
+    event_id references Event(event_id)
+    published_at datetime
+)
+
+Organizer (
+    event_id foreign key references Event(event_id)
+    user_id references User(user_id)
+    (event_id, user_id) primary key
+)
+
+Reservation (
+    reserve_id uuid primary key
+    status VARCHAR
+    create_date datetime
+    num_tickets int
+    user_id references User(user_id) foreign key
+    event_id references Event(event_id) 
+)
+
+API Design 
+Functionality based off of entities : 
+/users : 
+POST /user - create a new user (handwave login/authorization - come back to this) {
+    Request : {username, name, email, phone number, password}
+    - use OAuth2 some safe authentication mechanism
+    - add a row to User table - validate input 
+    if err : 400 bad request, else 200 OK
+}
+GET /user?user_id={user_id} -> return {user_id, username} {
+    SELECT user_id, username given user_id
+    if user not found : return 404, else return user_id, username
+}
+GET /user?user={username} -> {user_id, username, name, email} {
+    given username, return user_id 
+}
+POST /user/reserve?event_id={event_id} - user make reservation {
+    check capcacity of tickets - SUM(reservation.num_tickets) where event_id == Reservation.event_id and status == "booked"
+    if max capacity : return "unable to make a request"
+    else : add a row to Reservation table according to Request Body
+}
+PUT /user/cancel?reserve_id={reserve_id} - cancel a reservation {
+    check if reservation is valid - select reserve_id from reservations where reserve_id == reserve_id
+    if reservation is valid, change status of reservation status = canceled
+}
+
+GET /events : return all published events to a user {
+    select events from PublishedEvents table - return all rows
+}
+GET /events?event_name={name} : return event_id of event name
+
+Organizer - 
+GET /user/events - get events organized by this organizer {
+    select event_id from Organizer where user_id = user_id - store as a list
+    select * from Event where event_id in list
+}
+POST /user/events - create an event {
+    create Event where organizer_id = user_id
+    all other aspects should be within Request Body
+    make sure input has been validated
+}
+GET /user/events/reservations - get reservations for a particular event {
+    get event_id for current event
+    select * from reservation where event_id = event_id and status == BOOKED
+}
+POST /user/events/publish - publish an event
+
+Frontend Considerations:
+1. User Dashboard - browse events, get reservations, manage bookings, reserve a booking given an event
+2. Organizer Dashboard - create an event, publish an event, view reservations for an event
+
+Add pagination for events to reduce client load
+
+Tradeoffs:
+- scalability / reliablity - event booking platform should have a high uptime, concurrent systems
+- requests at the same exact time - have a queue management like TicketMaster example:
+    give everyone a line in the queue 
+    if multiple users have a ticket in their 'basket' each user has a cart/basket, wait untile checkout before allowing new users to add to queue 
+    partial failure for requests - have to cascade error to user - ensure invalid row has not been created
+
+

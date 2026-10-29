@@ -1,0 +1,43 @@
+System Design Interview Basics KodeKloud
+
+nobody expects a perfect system
+
+- explain Tradeoffs
+- explain ambiguity
+- take hints, adjust the design accordingly
+
+What interviewers are looking for:
+- judgement uner ambiguity
+- technical depth - what problem will this cache solve? what new problem does this cache create?
+- ask the right questions, validate the right assumptions
+
+1. clarifying requirements (5 minutes)
+design instagram to something concrete : functional requirements + non functional requirements
+
+2. back of the envelope estimation 
+how do we need to scale this app? 
+scrolling a lot more than we post - read heavy NOT write heavy
+
+3. defining the API (5 minutes)
+3 calls are enough for instagram
+POST /photos
+POST /follows
+GET /feed
+
+4. High level design - main components
+5. Low level design - home feed
+6. Bottleneck and Scaling 
+Follows becomes Bottleneck 
+7. Summarize everything you did in 60 seconds
+
+1. Clarifying Questions: functional and non-functional requirements
+design a photo sharing service: what kind? 
+instagram - uploads many small images?
+flickr - larger images but fewer number?
+- how many users? how fast is the userbase growing?
+functional : post photos, follow people, see a feed
+non-functional : how many users? how fast is it growing? what data can we not afford to lose? what should be the latency of important actions?
+
+event booking platform?
+organizers included? scope
+checkout - does that seat become unavailable? how we hold the seats

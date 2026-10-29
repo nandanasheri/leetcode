@@ -1,0 +1,107 @@
+Prep for Application Design Interview w Cherry
+
+1. Learn Requirements Clarification
+design task management application - users can create task
+organize them into project and track progress
+
+what we know:
+- users, tasks, projects
+- users create tasks, organize tasks into projects
+- track progress of projects
+
+1. requirements:
+core functionality
+data and relationships
+constraints
+- multiple users on one task? one project?
+- 1 user many tasks many projects?
+- can tasks be assigned to other users by a user?
+- progress is based off of task or project?
+- delete tasks? who can delete projects? 
+- any admin users managing projects? hierarchy of permissions?
+- how do we interact w projects/ tasks? do we have a dashboard? 
+- marking tasks as completed? filter/search/sort tasks?
+
+yes multiple on a project - Project Owner
+each task --> project
+task asignees --> multiple users (all project members)
+task : title, description, status, priority, due date, create date
+marked as : todo, in progress, done
+project progress : derived percentage of tasks marked done
+PO delete projects. Proj mems - create/update tasks but only PO deletes
+list tasks/ filter by status/ sort by due date
+
+2. Database Entities
+entities : User, Task, Project
+membership : User-Project, User-Task, Project-Tasks
+
+Data Models - 
+User :
+name, user_id (PK), email
+Project :
+name, project_id (PK), owner_id
+Task :
+title, desc, task_id (PK), status, priority, due_date, create_date, project_id(FK)
+User-Project:
+user_id, project_id, role
+User-Task:
+task_id, user_id
+
+Schema:
+User (
+    user_id UUID PRIMARY KEY,
+    name VARCHAR
+    email VARCHAR
+)
+Project (
+    name VARCHAR
+    project_id UUID PRIMARY KEY
+    owner_id UUID Foreign key references User(user_id)
+)
+Task (
+    title VARCHAR
+    desc VARCHAR
+    task_id UUID PRIMARY key
+    status not null default 'todo'
+    priority not null
+)
+
+UserProject (
+    project_id references Project(project_id)
+    user_id references User(user_id)
+    role VARCHAR
+    PRIMARY KEY (project_id, user_id)
+)
+
+APIs 
+POST /project
+GET /projects/{project_id}
+GET /projects/{project_id}/tasks?status=todo&sort_by=due_date
+POST /projects/{project_id}/task
+
+
+endpoint : 
+1. /create-project:
+- retrieve user id of logged in user
+- validate user
+Request Body {
+    Project Name
+    owner_id = userid 
+}
+- add to our Projects Table
+
+2. /get-project/{name}
+given name SELECT name, owner_id, project_id from Project where name = query or owner_id == query_id
+query = project_id
+tasks (name, desc "Task") given project_id = query
+
+3. add-task
+- create a task (name, des name of project)
+retrieve project id from Project Table
+add to task table with project_id
+
+POST /projects/abc/task
+- check if project name is valid to retreive id
+if not matching id return 404 with Message: Invalid Project name
+
+

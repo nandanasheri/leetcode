@@ -1,0 +1,37 @@
+User (
+    name varchar not null
+    email varchar not null
+    username varchar not null
+    user_id uuid primary key
+    created_at timestamp
+)
+
+ShortenedURL (
+    user_id references user(user_id)
+    short_id varchar primary key
+    url varchar
+    expiration timestamp
+)
+
+API design
+
+GET /user/{user_id}/urls 
+Response {
+    user_id
+    domain + short_id associated with the user
+    expiration of each short_id
+    url
+}
+POST /user/{user_id}/urls 
+Request Body {
+    user_id,
+    url
+    expiration = time.now() + (1-week) (set time initially, open to change)
+}
+POST /user
+create new user Request {name, email, phone, username}
+
+- Validate input, else 400
+- if no URLs are found for a user { empty }
+- create a size constraint for short_id shouldn't be larger than a certain amount 
+
