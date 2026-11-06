@@ -77,7 +77,73 @@ class DasherAvailabilityMatcher:
         TODO: Implement the method.
         """
         # Candidate implementation goes here.
-        raise NotImplementedError
+         # Invalid pickup window: no valid availability can overlap it.
+        if pickup_end_min <= pickup_start_min:
+            return []
+
+        results = []
+        seen_dashers = set()
+
+        for dasher in dashers:
+            # Avoid processing duplicate Dasher IDs.
+            if dasher.dasher_id in seen_dashers:
+                continue
+
+            seen_dashers.add(dasher.dasher_id)
+
+            # Fetch availability from the downstream service.
+            response = self.availability_api.get_availability(
+                dasher.dasher_id
+            )
+
+            # Skip failed or missing responses.
+            if response is None or response.status_code != 200:
+                continue
+
+            earliest_overlap_start = None
+
+            for window in response.windows or []:
+                # Ignore invalid availability intervals.
+                if window.end_min <= window.start_min:
+                    continue
+
+                # Half-open intervals overlap only if this is strictly
+                # positive. Merely touching at an endpoint is not enough.
+                overlap_start = max(
+                    window.start_min,
+                    pickup_start_min,
+                )
+                overlap_end = min(
+                    window.end_min,
+                    pickup_end_min,
+                )
+
+                if overlap_start >= overlap_end:
+                    continue
+
+                # Track the earliest overlapping start for this Dasher.
+                if (
+                    earliest_overlap_start is None
+                    or overlap_start < earliest_overlap_start
+                ):
+                    earliest_overlap_start = overlap_start
+
+            # Add the Dasher only if at least one window overlaps.
+            if earliest_overlap_start is not None:
+                results.append({
+                    "dasher_id": dasher.dasher_id,
+                    "earliest_available_min": earliest_overlap_start,
+                })
+
+        # Sort by earliest overlapping start, then Dasher ID.
+        results.sort(
+            key=lambda result: (
+                result["earliest_available_min"],
+                result["dasher_id"],
+            )
+        )
+
+        return results
 
 
 # --- Test Harness ---
