@@ -36,9 +36,45 @@ class DeliveryQuoteSelector:
         self, order_id: str, max_eta_minutes: int
     ) -> Optional[Dict[str, Any]]:
         """Return the best eligible quote, or None."""
-        return None
+        if (not isinstance(max_eta_minutes, int)
+                or isinstance(max_eta_minutes, bool)
+                or max_eta_minutes <= 0):
+            return None
 
-        
+        response = self.quotes_api.get_quotes(order_id)
+        if response.status_code != 200:
+            return None
+
+        best = None
+        for quote in response.quotes:
+            if not isinstance(quote.provider_id, str) or not quote.provider_id:
+                continue
+            if (not isinstance(quote.fee_cents, int)
+                    or isinstance(quote.fee_cents, bool)
+                    or quote.fee_cents < 0):
+                continue
+            if (not isinstance(quote.eta_minutes, int)
+                    or isinstance(quote.eta_minutes, bool)
+                    or quote.eta_minutes <= 0):
+                continue
+            if quote.available is not True:
+                continue
+            if quote.eta_minutes > max_eta_minutes:
+                continue
+
+            key = (quote.fee_cents, quote.eta_minutes, quote.provider_id)
+            if best is None or key < (
+                best.fee_cents, best.eta_minutes, best.provider_id
+            ):
+                best = quote
+
+        if best is None:
+            return None
+        return {
+            "provider_id": best.provider_id,
+            "fee_cents": best.fee_cents,
+            "eta_minutes": best.eta_minutes,
+        }
 
 
 def run_test_case(name, selector, order_id, max_eta, expected):
